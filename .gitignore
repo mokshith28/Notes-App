@@ -23,7 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 .vs
-.package-lock.json
+package-lock.json
 
 # =========================
 # .NET / Visual Studio

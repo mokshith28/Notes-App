@@ -6,6 +6,8 @@ namespace backend.Models
     {
         public int Id { get; set; }
 
+        public int UserId { get; set; }
+
         [Required, MaxLength(255)]
         public string Name { get; set; } = string.Empty;
 
@@ -21,6 +23,8 @@ namespace backend.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation property: One Category has many Expenses
+
+        public User? User { get; set; }
         public ICollection<Expense> Expenses { get; set; } = new List<Expense>();
     }
 }

@@ -1,13 +1,17 @@
 using Microsoft.EntityFrameworkCore;
-using backend.Models;
+using backend.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    // Prevents the "A possible object cycle was detected" error
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
@@ -31,10 +35,32 @@ builder.Services.AddDbContext<ExpenseDbContext>(options =>
 
 var app = builder.Build();
 
+// --- START SEEDING LOGIC ---
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ExpenseDbContext>();
+
+        // Optional: This line automatically runs pending migrations!
+        // context.Database.Migrate(); 
+
+        DbSeeder.SeedData(context);
+    }
+    catch (Exception ex)
+    {
+        // Log errors if the database connection fails
+        Console.WriteLine($"An error occurred seeding the DB: {ex.Message}");
+    }
+}
+// --- END SEEDING LOGIC ---
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

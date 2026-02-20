@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using backend.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace backend.Models
+namespace backend.Data
 {
     public class ExpenseDbContext : DbContext
     {

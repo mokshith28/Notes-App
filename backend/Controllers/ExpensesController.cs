@@ -68,7 +68,7 @@ namespace backend.Controllers
 
         // POST: api/expenses
         [HttpPost]
-        public async Task<ActionResult<Expense>> PostExpense(ExpenseCreateDTO dto)
+        public async Task<ActionResult<ExpenseResponseDTO>> PostExpense(ExpenseCreateDTO dto)
         {
             var newExpense = new Expense
             {
@@ -84,8 +84,25 @@ namespace backend.Controllers
             _context.Expenses.Add(newExpense);
             await _context.SaveChangesAsync();
 
+            // Fetch the expense with related data to return the DTO
+            var expenseResponse = await _context.Expenses
+                .Where(e => e.Id == newExpense.Id)
+                .Select(e => new ExpenseResponseDTO
+                {
+                    Id = e.Id,
+                    Title = e.Title,
+                    Amount = e.Amount,
+                    Description = e.Description,
+                    TransactionDate = e.TransactionDate,
+                    CategoryName = e.Category.Name,
+                    CategoryColor = e.Category.Color,
+                    CategoryIcon = e.Category.Icon,
+                    Username = e.User.Username
+                })
+                .FirstOrDefaultAsync();
+
             // Returns a 201 Created status and the newly created expense object
-            return CreatedAtAction(nameof(GetExpense), new { id = newExpense.Id }, newExpense);
+            return CreatedAtAction(nameof(GetExpense), new { id = newExpense.Id }, expenseResponse);
         }
 
         // DELETE: api/expenses/5

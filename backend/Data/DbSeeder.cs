@@ -20,20 +20,73 @@ namespace backend.Data
                 context.SaveChanges(); // Save so we generate an ID for the user
             }
 
-            // 2. Check if any Categories exist. If not, add the defaults.
-            if (!context.Categories.Any())
+            // Get the user for creating user-specific categories and expenses
+            var user = context.Users.FirstOrDefault(u => u.Username == "Mokshith");
+            
+            if (user == null) return; // Exit if user not found
+
+            // 2. Check if any Categories exist for this user. If not, add the defaults.
+            if (!context.Categories.Any(c => c.UserId == user.Id))
             {
                 var defaultCategories = new List<Category>
                 {
                     // Incomes
-                    new Category { Name = "Salary", Type = "income", Color = "#28a745", Icon = "money-bill" },
-                    new Category { Name = "Freelance", Type = "income", Color = "#20c997", Icon = "laptop" },
+                    new Category 
+                    { 
+                        UserId = user.Id,
+                        Name = "Salary", 
+                        Type = "income", 
+                        Color = "#28a745", 
+                        Icon = "money-bill",
+                        
+                    },
+                    new Category 
+                    { 
+                        UserId = user.Id,
+                        Name = "Freelance", 
+                        Type = "income", 
+                        Color = "#20c997", 
+                        Icon = "laptop",
+                        
+                    },
                     
                     // Expenses
-                    new Category { Name = "Food & Dining", Type = "expense", Color = "#ffc107", Icon = "utensils" },
-                    new Category { Name = "Rent", Type = "expense", Color = "#dc3545", Icon = "home" },
-                    new Category { Name = "Utilities", Type = "expense", Color = "#17a2b8", Icon = "bolt" },
-                    new Category { Name = "Entertainment", Type = "expense", Color = "#6f42c1", Icon = "film" }
+                    new Category 
+                    { 
+                        UserId = user.Id,
+                        Name = "Food & Dining", 
+                        Type = "expense", 
+                        Color = "#ffc107", 
+                        Icon = "utensils",
+                        
+                    },
+                    new Category 
+                    { 
+                        UserId = user.Id,
+                        Name = "Rent", 
+                        Type = "expense", 
+                        Color = "#dc3545", 
+                        Icon = "home",
+                      
+                    },
+                    new Category 
+                    { 
+                        UserId = user.Id,
+                        Name = "Utilities", 
+                        Type = "expense", 
+                        Color = "#17a2b8", 
+                        Icon = "bolt",
+                       
+                    },
+                    new Category 
+                    { 
+                        UserId = user.Id,
+                        Name = "Entertainment", 
+                        Type = "expense", 
+                        Color = "#6f42c1", 
+                        Icon = "film",
+                        
+                    }
                 };
 
                 context.Categories.AddRange(defaultCategories);
@@ -41,16 +94,15 @@ namespace backend.Data
             }
 
             // 3. Check if any Expenses exist. If not, add some sample transactions.
-            if (!context.Expenses.Any())
+            if (!context.Expenses.Any(e => e.UserId == user.Id))
             {
-                // Fetch the user and a few categories we just created to get their Database IDs
-                var user = context.Users.FirstOrDefault(u => u.Username == "Mokshith");
-                var salaryCategory = context.Categories.FirstOrDefault(c => c.Name == "Salary");
-                var foodCategory = context.Categories.FirstOrDefault(c => c.Name == "Food & Dining");
-                var rentCategory = context.Categories.FirstOrDefault(c => c.Name == "Rent");
+                // Fetch a few categories we just created to get their Database IDs
+                var salaryCategory = context.Categories.FirstOrDefault(c => c.Name == "Salary" && c.UserId == user.Id);
+                var foodCategory = context.Categories.FirstOrDefault(c => c.Name == "Food & Dining" && c.UserId == user.Id);
+                var rentCategory = context.Categories.FirstOrDefault(c => c.Name == "Rent" && c.UserId == user.Id);
 
                 // Ensure we successfully found them before adding expenses
-                if (user != null && salaryCategory != null && foodCategory != null && rentCategory != null)
+                if (salaryCategory != null && foodCategory != null && rentCategory != null)
                 {
                     var defaultExpenses = new List<Expense>
                     {

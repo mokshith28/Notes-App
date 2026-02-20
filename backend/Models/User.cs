@@ -19,5 +19,7 @@ namespace backend.Models
 
         // Navigation property: One User has many Expenses
         public ICollection<Expense> Expenses { get; set; } = new List<Expense>();
+
+        public ICollection<Category> Categories { get; set; } = new List<Category>();
     }
 }

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { expenseService } from '../services/expenseService';
+import CategoryModal from './CategoryModal';
 import './ExpenseForm.css';
 
 function ExpenseForm({ onExpenseAdded }) {
   const [categories, setCategories] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     userId: 1, // Default user ID - you can make this dynamic later
     categoryId: '', // Default category ID
@@ -28,6 +30,29 @@ function ExpenseForm({ onExpenseAdded }) {
     fetchCategories();
   }, []);
 
+  const handleCategoryAdded = async (newCategory) => {
+    // Refresh categories list
+    try {
+      const data = await expenseService.getCategories();
+      setCategories(data);
+      // Auto-select the newly created category
+      setFormData((prev) => ({
+        ...prev,
+        categoryId: newCategory.id,
+      }));
+    } catch (err) {
+      console.error('Failed to refresh categories:', err);
+    }
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -38,7 +63,6 @@ function ExpenseForm({ onExpenseAdded }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('Current formData:', formData);
     setError('');
     setLoading(true);
 
@@ -51,8 +75,6 @@ function ExpenseForm({ onExpenseAdded }) {
         Description: formData.description,
         TransactionDate: formData.transactionDate,
       };
-      
-      console.log('Sending to backend:', expenseData);
       
       const newExpense = await expenseService.createExpense(expenseData);
       // Reset form
@@ -126,23 +148,33 @@ function ExpenseForm({ onExpenseAdded }) {
         <div className="form-row">
           <div className="form-group">
             <label htmlFor="categoryId">Category *</label>
-            <select
-              id="categoryId"
-              name="categoryId"
-              value={formData.categoryId}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option 
-                  key={category.id} 
-                  value={category.id}
-                >
-                  {category.name}
-                </option>
-              ))}
-            </select>
+            <div className="category-input-wrapper">
+              <select
+                id="categoryId"
+                name="categoryId"
+                value={formData.categoryId}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select a category</option>
+                {categories.map((category) => (
+                  <option 
+                    key={category.id} 
+                    value={category.id}
+                  >
+                    {category.icon} {category.name}
+                  </option>
+                ))}
+              </select>
+              <button 
+                type="button" 
+                className="add-category-btn" 
+                onClick={handleOpenModal}
+                title="Add new category"
+              >
+                +
+              </button>
+            </div>
           </div>
 
           <div className="form-group">
@@ -175,6 +207,12 @@ function ExpenseForm({ onExpenseAdded }) {
           {loading ? 'Adding...' : 'Add Expense'}
         </button>
       </form>
+
+      <CategoryModal 
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onCategoryAdded={handleCategoryAdded}
+      />
     </div>
   );
 }

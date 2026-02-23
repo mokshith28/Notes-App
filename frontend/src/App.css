@@ -1,55 +1,11 @@
-#root {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
 .app {
   min-height: 100vh;
-}
-
-.app-header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.app-header h1 {
-  margin: 0;
-  font-size: 2.5rem;
-  background: linear-gradient(135deg, #646cff 0%, #4ade80 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.5rem;
-}
-
-.app-subtitle {
-  color: #a0a0a0;
-  font-size: 1rem;
-  margin: 0;
-}
-
-.app-content {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  background-color: #f5f5f5;
 }
 
 @media (max-width: 768px) {
-  #root {
-    padding: 1rem;
-  }
-
-  .app-header h1 {
-    font-size: 2rem;
-  }
-
-  .app-subtitle {
+  .app {
     font-size: 0.9rem;
-  }
-
-  .app-content {
-    gap: 1.5rem;
   }
 }
 

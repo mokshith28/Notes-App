@@ -63,6 +63,42 @@
   min-height: 80px;
 }
 
+.category-input-wrapper {
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.category-input-wrapper select {
+  flex: 1;
+}
+
+.add-category-btn {
+  background-color: #646cff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.add-category-btn:hover {
+  background-color: #535bf2;
+  transform: scale(1.05);
+}
+
+.add-category-btn:active {
+  transform: scale(0.95);
+}
+
 .submit-btn {
   padding: 0.875rem 1.5rem;
   background-color: #646cff;

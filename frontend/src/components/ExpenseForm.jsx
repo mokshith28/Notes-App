@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { expenseService } from '../services/expenseService';
 import './ExpenseForm.css';
 
 function ExpenseForm({ onExpenseAdded }) {
+  const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     userId: 1, // Default user ID - you can make this dynamic later
-    categoryId: 1, // Default category ID
+    categoryId: '', // Default category ID
     title: '',
     amount: '',
     description: '',
@@ -14,27 +15,50 @@ function ExpenseForm({ onExpenseAdded }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Fetch categories on component mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await expenseService.getCategories();
+        setCategories(data);
+      } catch (err) {
+        console.error('Failed to fetch categories:', err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'amount' || name === 'userId' || name === 'categoryId' 
-        ? Number(value) 
-        : value,
+      [name]: value, // Remove the Number conversion here
     }));
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
+    console.log('Current formData:', formData);
     setError('');
     setLoading(true);
 
     try {
-      const newExpense = await expenseService.createExpense(formData);
+      const expenseData = {
+        UserId: Number(formData.userId),
+        CategoryId: Number(formData.categoryId),
+        Title: formData.title,
+        Amount: Number(formData.amount),
+        Description: formData.description,
+        TransactionDate: formData.transactionDate,
+      };
+      
+      console.log('Sending to backend:', expenseData);
+      
+      const newExpense = await expenseService.createExpense(expenseData);
       // Reset form
       setFormData({
         userId: 1,
-        categoryId: 1,
+        categoryId: '',
         title: '',
         amount: '',
         description: '',
@@ -45,6 +69,7 @@ function ExpenseForm({ onExpenseAdded }) {
         onExpenseAdded(newExpense);
       }
     } catch (err) {
+      console.error('Error details:', err);
       setError(err.message || 'Failed to add expense');
     } finally {
       setLoading(false);
@@ -108,12 +133,15 @@ function ExpenseForm({ onExpenseAdded }) {
               onChange={handleChange}
               required
             >
-              <option value="1">Food</option>
-              <option value="2">Transport</option>
-              <option value="3">Entertainment</option>
-              <option value="4">Shopping</option>
-              <option value="5">Bills</option>
-              <option value="6">Other</option>
+              <option value="">Select a category</option>
+              {categories.map((category) => (
+                <option 
+                  key={category.id} 
+                  value={category.id}
+                >
+                  {category.name}
+                </option>
+              ))}
             </select>
           </div>
 

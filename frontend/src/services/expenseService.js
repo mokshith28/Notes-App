@@ -54,4 +54,20 @@ export const expenseService = {
     }
     return response.json();
   },
+
+  // Create new category
+  async createCategory(categoryData) {
+    const response = await fetch(`${API_BASE_URL}/categories`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(categoryData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create category');
+    }
+    return response.json();
+  },
 };

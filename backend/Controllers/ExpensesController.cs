@@ -3,11 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using backend.Data;
 using backend.DTOs; 
 using backend.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ExpensesController : ControllerBase
     {
         private readonly ExpenseDbContext _context;
@@ -21,7 +23,6 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ExpenseResponseDTO>>> GetExpenses()
         {
-            // .Include() fetches the related Category data so your React app can show the Category Name/Icon
             return await _context.Expenses
                 .OrderByDescending(e => e.TransactionDate)
                 .Select(e => new ExpenseResponseDTO

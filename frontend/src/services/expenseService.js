@@ -21,7 +21,6 @@ export const expenseService = {
 
   // Create new expense
   async createExpense(expenseData) {
-    debugger
     const response = await fetch(`${API_BASE_URL}/expenses`, {
       method: 'POST',
       headers: {
@@ -29,6 +28,7 @@ export const expenseService = {
       },
       body: JSON.stringify(expenseData),
     });
+
     if (!response.ok) {
       throw new Error('Failed to create expense');
     }
@@ -44,5 +44,30 @@ export const expenseService = {
       throw new Error('Failed to delete expense');
     }
     return response.status === 204;
+  },
+
+  // Get all categories
+  async getCategories() {
+    const response = await fetch(`${API_BASE_URL}/categories`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch categories');
+    }
+    return response.json();
+  },
+
+  // Create new category
+  async createCategory(categoryData) {
+    const response = await fetch(`${API_BASE_URL}/categories`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(categoryData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create category');
+    }
+    return response.json();
   },
 };

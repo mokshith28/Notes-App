@@ -28,7 +28,8 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(allowedOrigins)
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials(); // Allow credentials (cookies)
         });
 });
 
@@ -85,6 +86,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseCors("AllowFrontend");
 

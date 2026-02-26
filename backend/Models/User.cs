@@ -15,6 +15,13 @@ namespace backend.Models
         [Required]
         public string PasswordHash { get; set; } = string.Empty;
 
+        [MaxLength(500)]
+        public string? ProfileImageUrl { get; set; }
+
+        public string? RefreshToken { get; set; }
+        
+        public DateTime? RefreshTokenExpiryTime { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation property: One User has many Expenses

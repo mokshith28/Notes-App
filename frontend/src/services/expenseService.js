@@ -1,9 +1,23 @@
+import { authService } from './authService';
+
 const API_BASE_URL = 'https://localhost:7211/api';
+
+// Helper function to get auth headers
+const getAuthHeaders = async () => {
+  const token = await authService.getValidAccessToken();
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  };
+};
 
 export const expenseService = {
   // Get all expenses
   async getAllExpenses() {
-    const response = await fetch(`${API_BASE_URL}/expenses`);
+    const response = await fetch(`${API_BASE_URL}/expenses`, {
+      headers: await getAuthHeaders(),
+      credentials: 'include',
+    });
     if (!response.ok) {
       throw new Error('Failed to fetch expenses');
     }
@@ -12,7 +26,10 @@ export const expenseService = {
 
   // Get single expense by ID
   async getExpenseById(id) {
-    const response = await fetch(`${API_BASE_URL}/expenses/${id}`);
+    const response = await fetch(`${API_BASE_URL}/expenses/${id}`, {
+      headers: await getAuthHeaders(),
+      credentials: 'include',
+    });
     if (!response.ok) {
       throw new Error('Failed to fetch expense');
     }
@@ -23,9 +40,8 @@ export const expenseService = {
   async createExpense(expenseData) {
     const response = await fetch(`${API_BASE_URL}/expenses`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: await getAuthHeaders(),
+      credentials: 'include',
       body: JSON.stringify(expenseData),
     });
 
@@ -39,6 +55,8 @@ export const expenseService = {
   async deleteExpense(id) {
     const response = await fetch(`${API_BASE_URL}/expenses/${id}`, {
       method: 'DELETE',
+      headers: await getAuthHeaders(),
+      credentials: 'include',
     });
     if (!response.ok) {
       throw new Error('Failed to delete expense');
@@ -48,7 +66,10 @@ export const expenseService = {
 
   // Get all categories
   async getCategories() {
-    const response = await fetch(`${API_BASE_URL}/categories`);
+    const response = await fetch(`${API_BASE_URL}/categories`, {
+      headers: await getAuthHeaders(),
+      credentials: 'include',
+    });
     if (!response.ok) {
       throw new Error('Failed to fetch categories');
     }
@@ -59,9 +80,8 @@ export const expenseService = {
   async createCategory(categoryData) {
     const response = await fetch(`${API_BASE_URL}/categories`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: await getAuthHeaders(),
+      credentials: 'include',
       body: JSON.stringify(categoryData),
     });
 

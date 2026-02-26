@@ -1,0 +1,88 @@
+/* ========================================
+   NEO-BRUTALIST CARD COMPONENT
+   ======================================== */
+
+.neo-card {
+  background: var(--neo-white);
+  border: var(--border-default);
+  box-shadow: var(--shadow-md);
+  padding: 1.5rem;
+  position: relative;
+  transition: all 0.2s ease-out;
+}
+
+/* Variants */
+.neo-card--default {
+  background: var(--neo-white);
+}
+
+.neo-card--accent {
+  background: var(--neo-accent);
+}
+
+.neo-card--secondary {
+  background: var(--neo-secondary);
+}
+
+.neo-card--muted {
+  background: var(--neo-muted);
+}
+
+.neo-card--outline {
+  background: transparent;
+  border: var(--border-default);
+}
+
+/* Hover Lift Effect */
+.neo-card--hover {
+  cursor: pointer;
+}
+
+.neo-card--hover:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.neo-card--hover:active {
+  transform: translate(0, 0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Sticker Rotation */
+.neo-card--rotate {
+  transform: rotate(-1deg);
+}
+
+.neo-card--rotate:hover {
+  transform: rotate(0deg) translate(-4px, -4px);
+}
+
+/* Card Parts */
+.neo-card__header {
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: var(--border-default);
+}
+
+.neo-card__body {
+  padding: 0;
+}
+
+.neo-card__footer {
+  padding-top: 1rem;
+  margin-top: 1rem;
+  border-top: var(--border-default);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .neo-card {
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .neo-card--hover:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-md);
+  }
+}

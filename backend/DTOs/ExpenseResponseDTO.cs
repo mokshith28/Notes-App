@@ -9,8 +9,7 @@
         public DateTime TransactionDate { get; set; }
 
         // Flatten the Category data
-        public string CategoryName { get; set; } = string.Empty;
-        public string? CategoryColor { get; set; }
+        public string CategoryName { get; set; } = string.Empty;        public string CategoryType { get; set; } = string.Empty;        public string? CategoryColor { get; set; }
         public string? CategoryIcon { get; set; }
 
         // Only send the Username, NOT the password or the user's entire expense history!

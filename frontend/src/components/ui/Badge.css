@@ -1,0 +1,108 @@
+/* ========================================
+   NEO-BRUTALIST BADGE COMPONENT
+   ======================================== */
+
+.neo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.875rem;
+  font-family: var(--font-primary);
+  font-weight: 900;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: var(--border-default);
+  background: var(--neo-accent);
+  color: var(--neo-black);
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+  transition: all 0.15s ease-out;
+}
+
+/* Variants */
+.neo-badge--accent {
+  background: var(--neo-accent);
+}
+
+.neo-badge--secondary {
+  background: var(--neo-secondary);
+}
+
+.neo-badge--muted {
+  background: var(--neo-muted);
+}
+
+.neo-badge--white {
+  background: var(--neo-white);
+}
+
+.neo-badge--black {
+  background: var(--neo-black);
+  color: var(--neo-white);
+}
+
+.neo-badge--success {
+  background: #22c55e;
+  color: var(--neo-white);
+}
+
+.neo-badge--danger {
+  background: #ef4444;
+  color: var(--neo-white);
+}
+
+.neo-badge--primary {
+  background: #3b82f6;
+  color: var(--neo-white);
+}
+
+/* Sizes */
+.neo-badge--sm {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.625rem;
+  border-width: 2px;
+}
+
+.neo-badge--md {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.75rem;
+}
+
+.neo-badge--lg {
+  padding: 0.5rem 1.125rem;
+  font-size: 0.875rem;
+}
+
+/* Pill Shape */
+.neo-badge--pill {
+  border-radius: 999px;
+}
+
+/* Sticker Rotation Effect */
+.neo-badge--rotate {
+  transform: rotate(3deg);
+}
+
+.neo-badge--rotate:hover {
+  transform: rotate(6deg) scale(1.05);
+}
+
+/* Hover Effect */
+.neo-badge:hover {
+  transform: rotate(0deg) scale(1.05);
+  box-shadow: 4px 4px 0px 0px var(--neo-black);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .neo-badge {
+    padding: 0.3rem 0.75rem;
+    font-size: 0.7rem;
+  }
+  
+  .neo-badge--sm {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.6rem;
+  }
+}

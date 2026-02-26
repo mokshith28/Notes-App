@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { expenseService } from '../services/expenseService';
+import Button from './ui/Button';
+import Input from './ui/Input';
+import Badge from './ui/Badge';
 import './CategoryModal.css';
 
 function CategoryModal({ isOpen, onClose, onCategoryAdded }) {
@@ -98,33 +101,40 @@ function CategoryModal({ isOpen, onClose, onCategoryAdded }) {
     <div className="modal-backdrop" onClick={handleBackdropClick}>
       <div className="modal-content">
         <div className="modal-header">
-          <h3>Create New Category</h3>
-          <button className="modal-close-btn" onClick={onClose} aria-label="Close">
+          <div className="modal-title-group">
+            <h3 className="modal-title">NEW CATEGORY</h3>
+            <Badge variant="primary">🆕</Badge>
+          </div>
+          <Button
+            variant="outline"
+            size="small"
+            onClick={onClose}
+            className="modal-close-btn"
+            aria-label="Close"
+          >
             ✕
-          </button>
+          </Button>
         </div>
 
         {error && <div className="modal-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="category-form">
           <div className="form-group">
-            <label htmlFor="name">Category Name *</label>
-            <input
+            <label className="form-label">CATEGORY NAME</label>
+            <Input
               type="text"
-              id="name"
               name="name"
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="e.g., Groceries, Entertainment"
+              placeholder="e.g., Groceries"
               autoFocus
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="type">Type *</label>
-            <select
-              id="type"
+            <label className="form-label">TYPE</label>
+            <Input.Select
               name="type"
               value={formData.type}
               onChange={handleChange}
@@ -132,29 +142,26 @@ function CategoryModal({ isOpen, onClose, onCategoryAdded }) {
             >
               <option value="Expense">Expense</option>
               <option value="Income">Income</option>
-            </select>
+            </Input.Select>
           </div>
 
           <div className="form-group">
-            <label>Icon *</label>
+            <label className="form-label">ICON</label>
             <div className="icon-grid">
               {commonIcons.map((icon) => (
                 <button
                   key={icon}
                   type="button"
-                  className={`icon-btn ${formData.icon === icon ? 'selected' : ''}`}
+                  className={`icon-btn ${formData.icon === icon ? 'icon-btn--selected' : ''}`}
                   onClick={() => handleIconSelect(icon)}
                 >
                   {icon}
                 </button>
               ))}
             </div>
-            <input
+            <Input
               type="text"
               name="icon"
-
-
-              
               value={formData.icon}
               onChange={handleChange}
               placeholder="Or enter custom emoji"
@@ -163,13 +170,13 @@ function CategoryModal({ isOpen, onClose, onCategoryAdded }) {
           </div>
 
           <div className="form-group">
-            <label>Color *</label>
+            <label className="form-label">COLOR</label>
             <div className="color-grid">
               {commonColors.map((color) => (
                 <button
                   key={color}
                   type="button"
-                  className={`color-btn ${formData.color === color ? 'selected' : ''}`}
+                  className={`color-btn ${formData.color === color ? 'color-btn--selected' : ''}`}
                   style={{ backgroundColor: color }}
                   onClick={() => handleColorSelect(color)}
                   aria-label={`Select color ${color}`}
@@ -186,22 +193,22 @@ function CategoryModal({ isOpen, onClose, onCategoryAdded }) {
           </div>
 
           <div className="category-preview">
-            <span>Preview: </span>
-            <span 
-              className="preview-badge" 
-              style={{ backgroundColor: formData.color }}
+            <span className="preview-label">PREVIEW</span>
+            <Badge 
+              style={{ backgroundColor: formData.color, color: '#fff' }}
+              className="preview-badge"
             >
-              {formData.icon} {formData.name || 'Category Name'}
-            </span>
+              {formData.icon} {formData.name || 'Category'}
+            </Badge>
           </div>
 
           <div className="modal-actions">
-            <button type="button" className="btn-cancel" onClick={onClose}>
-              Cancel
-            </button>
-            <button type="submit" className="btn-submit" disabled={loading}>
-              {loading ? 'Creating...' : 'Create Category'}
-            </button>
+            <Button type="button" variant="outline" onClick={onClose}>
+              CANCEL
+            </Button>
+            <Button type="submit" variant="primary" disabled={loading}>
+              {loading ? 'CREATING...' : '✔️ CREATE'}
+            </Button>
           </div>
         </form>
       </div>

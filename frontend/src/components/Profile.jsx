@@ -3,6 +3,10 @@ import { useState, useEffect } from 'react';
 import { authService } from '../services/authService';
 import { expenseService } from '../services/expenseService';
 import { profileService } from '../services/profileService';
+import Card from './ui/Card';
+import Button from './ui/Button';
+import Input from './ui/Input';
+import Badge from './ui/Badge';
 import './Profile.css';
 
 function Profile() {
@@ -12,6 +16,8 @@ function Profile() {
   const [stats, setStats] = useState({
     totalExpenses: 0,
     totalAmount: 0,
+    totalIncome: 0,
+    totalExpense: 0,
     categories: 0
   });
   const [loading, setLoading] = useState(true);
@@ -53,11 +59,21 @@ function Profile() {
       const expenses = await expenseService.getAllExpenses();
       const categories = await expenseService.getCategories();
 
-      const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+      const totalIncome = expenses
+        .filter(expense => expense.categoryType === 'income')
+        .reduce((sum, expense) => sum + expense.amount, 0);
+
+      const totalExpense = expenses
+        .filter(expense => expense.categoryType === 'expense')
+        .reduce((sum, expense) => sum + expense.amount, 0);
+
+      const totalAmount = totalIncome - totalExpense;
 
       setStats({
         totalExpenses: expenses.length,
         totalAmount: totalAmount,
+        totalIncome: totalIncome,
+        totalExpense: totalExpense,
         categories: categories.length
       });
     } catch (error) {
@@ -207,13 +223,26 @@ function Profile() {
 
   return (
     <div className="profile-container">
-      <div className="profile-card">
-        <button className="back-button" onClick={handleBackClick}>
-          ← Back to Expenses
-        </button>
+      <Card className="profile-card">
+        <Button 
+          variant="outline" 
+          size="small" 
+          onClick={handleBackClick}
+          className="back-button"
+        >
+          ← BACK TO EXPENSES
+        </Button>
 
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
+        {error && (
+          <div className="profile-message profile-message--error">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="profile-message profile-message--success">
+            {success}
+          </div>
+        )}
 
         {!isEditMode ? (
           <>
@@ -227,66 +256,82 @@ function Profile() {
                   </div>
                 )}
               </div>
-              <h2>{profile?.username || user?.username}</h2>
+              <h2 className="profile-name">{profile?.username || user?.username}</h2>
               <p className="profile-email">{profile?.email || user?.email}</p>
             </div>
 
-            <div className="profile-stats">
-              <h3>Account Details</h3>
-              <div className="user-details">
-                <div className="detail-item">
-                  <span className="detail-label">User ID:</span>
-                  <span className="detail-value">{profile?.id || user?.id}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Username:</span>
-                  <span className="detail-value">{profile?.username || user?.username}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Email:</span>
-                  <span className="detail-value">{profile?.email || user?.email}</span>
-                </div>
+            <div className="profile-section">
+              <h3 className="section-title">STATS</h3>
+              <div className="stats-grid">
+                <Badge variant="secondary" className="stat-badge stat-1">
+                  <span className="stat-emoji">📝</span>
+                  <span className="stat-value">{stats.totalExpenses}</span>
+                  <span className="stat-label">TRANSACTIONS</span>
+                </Badge>
+                <Badge variant="success" className="stat-badge stat-2">
+                  <span className="stat-emoji">💰</span>
+                  <span className="stat-value">${stats.totalIncome.toFixed(2)}</span>
+                  <span className="stat-label">INCOME</span>
+                </Badge>
+                <Badge variant="danger" className="stat-badge stat-3">
+                  <span className="stat-emoji">💸</span>
+                  <span className="stat-value">${stats.totalExpense.toFixed(2)}</span>
+                  <span className="stat-label">EXPENSES</span>
+                </Badge>
+                <Badge variant="primary" className="stat-badge stat-4">
+                  <span className="stat-emoji">💵</span>
+                  <span className="stat-value" style={{color: stats.totalAmount >= 0 ? '#22c55e' : '#ef4444'}}>
+                    ${Math.abs(stats.totalAmount).toFixed(2)}
+                  </span>
+                  <span className="stat-label">BALANCE</span>
+                </Badge>
+                <Badge variant="accent" className="stat-badge stat-5">
+                  <span className="stat-emoji">📁</span>
+                  <span className="stat-value">{stats.categories}</span>
+                  <span className="stat-label">CATEGORIES</span>
+                </Badge>
               </div>
             </div>
 
-            <div className="profile-stats">
-              <h3>Your Stats</h3>
-              <div className="stats-grid">
-                <div className="stat-item">
-                  <span className="stat-value">{stats.totalExpenses}</span>
-                  <span className="stat-label">Total Expenses</span>
+            <div className="profile-section">
+              <h3 className="section-title">DETAILS</h3>
+              <div className="details-list">
+                <div className="detail-row">
+                  <span className="detail-label">USER ID</span>
+                  <Badge variant="outline" size="small">{profile?.id || user?.id}</Badge>
                 </div>
-                <div className="stat-item">
-                  <span className="stat-value">${stats.totalAmount.toFixed(2)}</span>
-                  <span className="stat-label">Total Amount</span>
+                <div className="detail-row">
+                  <span className="detail-label">USERNAME</span>
+                  <Badge variant="outline" size="small">{profile?.username || user?.username}</Badge>
                 </div>
-                <div className="stat-item">
-                  <span className="stat-value">{stats.categories}</span>
-                  <span className="stat-label">Categories Used</span>
+                <div className="detail-row">
+                  <span className="detail-label">EMAIL</span>
+                  <Badge variant="outline" size="small">{profile?.email || user?.email}</Badge>
                 </div>
               </div>
             </div>
 
             <div className="profile-actions">
-              <button className="btn-edit" onClick={handleEditProfile}>
-                Edit Profile
-              </button>
-              <button className="btn-logout" onClick={handleLogout}>
-                Logout
-              </button>
+              <Button variant="primary" onClick={handleEditProfile}>
+                ✏️ EDIT PROFILE
+              </Button>
+              <Button variant="accent" onClick={handleLogout}>
+                🚪 LOGOUT
+              </Button>
             </div>
           </>
         ) : (
           <>
-            <div className="profile-header">
-              <h2>Edit Profile</h2>
+            <div className="edit-header">
+              <h2 className="edit-title">EDIT PROFILE</h2>
+              <Badge variant="secondary">⚙️</Badge>
             </div>
 
             <form onSubmit={handleSaveProfile} className="edit-profile-form">
               <div className="form-section">
-                <h3>Profile Picture</h3>
+                <h3 className="section-subtitle">PROFILE PICTURE</h3>
                 <div className="image-upload-section">
-                  <div className="profile-avatar">
+                  <div className="profile-avatar profile-avatar--edit">
                     {imagePreview ? (
                       <img src={imagePreview} alt="Preview" />
                     ) : getProfileImageUrl() ? (
@@ -298,8 +343,10 @@ function Profile() {
                     )}
                   </div>
                   <div className="image-actions">
-                    <label htmlFor="image-upload" className="btn-upload">
-                      Choose Image
+                    <label htmlFor="image-upload" className="upload-button">
+                      <Button as="span" variant="primary" size="small">
+                        📷 CHOOSE IMAGE
+                      </Button>
                     </label>
                     <input
                       id="image-upload"
@@ -309,53 +356,52 @@ function Profile() {
                       style={{ display: 'none' }}
                     />
                     {(profile?.profileImageUrl || imagePreview) && (
-                      <button
+                      <Button
                         type="button"
-                        className="btn-delete-image"
+                        variant="accent"
+                        size="small"
                         onClick={handleDeleteImage}
                       >
-                        Delete Image
-                      </button>
+                        🗑️ DELETE
+                      </Button>
                     )}
                   </div>
-                  <p className="image-hint">Max size: 5MB. Formats: JPG, PNG, GIF</p>
+                  <p className="form-hint">Max 5MB • JPG, PNG, GIF</p>
                 </div>
               </div>
 
               <div className="form-section">
-                <h3>Username</h3>
-                <input
+                <h3 className="section-subtitle">USERNAME</h3>
+                <Input
                   type="text"
                   value={editUsername}
                   onChange={(e) => setEditUsername(e.target.value)}
-                  className="edit-input"
                   placeholder="Enter username"
                 />
               </div>
 
               <div className="form-section">
-                <h3>Email</h3>
-                <input
+                <h3 className="section-subtitle">EMAIL</h3>
+                <Input
                   type="email"
                   value={profile?.email || user?.email}
-                  className="edit-input"
                   disabled
                 />
-                <p className="input-hint">Email cannot be changed</p>
+                <p className="form-hint">Email cannot be changed</p>
               </div>
 
               <div className="edit-actions">
-                <button type="submit" className="btn-save">
-                  Save Changes
-                </button>
-                <button type="button" className="btn-cancel" onClick={handleCancelEdit}>
-                  Cancel
-                </button>
+                <Button type="submit" variant="primary">
+                  ✔️ SAVE CHANGES
+                </Button>
+                <Button type="button" variant="outline" onClick={handleCancelEdit}>
+                  ❌ CANCEL
+                </Button>
               </div>
             </form>
           </>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

@@ -42,6 +42,7 @@ namespace backend.Controllers
                     Description = e.Description,
                     TransactionDate = e.TransactionDate,
                     CategoryName = e.Category.Name,
+                    CategoryType = e.Category.Type,
                     CategoryColor = e.Category.Color,
                     CategoryIcon = e.Category.Icon,
                     Username = e.User.Username
@@ -70,6 +71,7 @@ namespace backend.Controllers
                     Description = e.Description,
                     TransactionDate = e.TransactionDate,
                     CategoryName = e.Category.Name,
+                    CategoryType = e.Category.Type,
                     CategoryColor = e.Category.Color,
                     CategoryIcon = e.Category.Icon,
                     Username = e.User.Username
@@ -120,6 +122,7 @@ namespace backend.Controllers
                     Description = e.Description,
                     TransactionDate = e.TransactionDate,
                     CategoryName = e.Category.Name,
+                    CategoryType = e.Category.Type,
                     CategoryColor = e.Category.Color,
                     CategoryIcon = e.Category.Icon,
                     Username = e.User.Username

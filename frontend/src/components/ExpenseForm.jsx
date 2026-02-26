@@ -1,23 +1,26 @@
 import { useState, useEffect } from 'react';
 import { expenseService } from '../services/expenseService';
 import CategoryModal from './CategoryModal';
+import Button from './ui/Button';
+import Input from './ui/Input';
+import Card from './ui/Card';
+import Badge from './ui/Badge';
 import './ExpenseForm.css';
 
 function ExpenseForm({ onExpenseAdded }) {
   const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    userId: 1, // Default user ID - you can make this dynamic later
-    categoryId: '', // Default category ID
+    categoryId: '',
     title: '',
     amount: '',
     description: '',
-    transactionDate: new Date().toISOString().split('T')[0], // Today's date
+    transactionDate: new Date().toISOString().split('T')[0],
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -31,11 +34,9 @@ function ExpenseForm({ onExpenseAdded }) {
   }, []);
 
   const handleCategoryAdded = async (newCategory) => {
-    // Refresh categories list
     try {
       const data = await expenseService.getCategories();
       setCategories(data);
-      // Auto-select the newly created category
       setFormData((prev) => ({
         ...prev,
         categoryId: newCategory.id,
@@ -57,13 +58,16 @@ function ExpenseForm({ onExpenseAdded }) {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value, // Remove the Number conversion here
+      [name]: value,
     }));
+    setError('');
+    setSuccess('');
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     setError('');
+    setSuccess('');
     setLoading(true);
 
     try {
@@ -75,7 +79,8 @@ function ExpenseForm({ onExpenseAdded }) {
         TransactionDate: formData.transactionDate,
       };
       
-      const newExpense = await expenseService.createExpense(expenseData);
+      await expenseService.createExpense(expenseData);
+      
       // Reset form
       setFormData({
         categoryId: '',
@@ -84,40 +89,67 @@ function ExpenseForm({ onExpenseAdded }) {
         description: '',
         transactionDate: new Date().toISOString().split('T')[0],
       });
-      // Notify parent component
+      
+      setSuccess('✓ EXPENSE ADDED SUCCESSFULLY!');
+      
+      // Notify parent
       if (onExpenseAdded) {
-        onExpenseAdded(newExpense);
+        onExpenseAdded();
       }
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       console.error('Error details:', err);
-      setError(err.message || 'Failed to add expense');
+      setError(err.message || 'FAILED TO ADD EXPENSE');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="expense-form-container">
-      <h2>Add New Expense</h2>
-      {error && <div className="error-message">{error}</div>}
-      <form onSubmit={handleSubmit} className="expense-form">
-        <div className="form-group">
-          <label htmlFor="title">Title *</label>
-          <input
+    <Card className="expense-form-card">
+      <Card.Header>
+        <div className="expense-form-header">
+          <div>
+            <h2 className="expense-form-title uppercase">→ ADD EXPENSE</h2>
+            <p className="expense-form-subtitle">TRACK YOUR SPENDING</p>
+          </div>
+          <Badge variant="accent" rotate>
+            💸 NEW
+          </Badge>
+        </div>
+      </Card.Header>
+
+      <Card.Body>
+        {error && (
+          <div className="expense-message expense-message--error">
+            {error}
+          </div>
+        )}
+        
+        {success && (
+          <div className="expense-message expense-message--success">
+            {success}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="expense-form">
+          <Input
+            label="Expense Title"
             type="text"
             id="title"
             name="title"
             value={formData.title}
             onChange={handleChange}
             required
-            placeholder="Enter expense title"
+            placeholder="e.g., COFFEE, LUNCH, GAS"
+            fullWidth
           />
-        </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="amount">Amount *</label>
-            <input
+          <div className="expense-form-row">
+            <Input
+              label="Amount ($)"  
               type="number"
               id="amount"
               name="amount"
@@ -128,12 +160,10 @@ function ExpenseForm({ onExpenseAdded }) {
               step="0.01"
               placeholder="0.00"
             />
-          </div>
 
-          <div className="form-group">
-            <label htmlFor="transactionDate">Date *</label>
-            <input
-              type="date"
+            <Input
+              label="Date"
+              type="date" 
               id="transactionDate"
               name="transactionDate"
               value={formData.transactionDate}
@@ -141,62 +171,67 @@ function ExpenseForm({ onExpenseAdded }) {
               required
             />
           </div>
-        </div>
 
-        <div className="form-group">
-          <label htmlFor="categoryId">Category *</label>
-          <div className="category-input-wrapper">
-            <select
-              id="categoryId"
-              name="categoryId"
-              value={formData.categoryId}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option 
-                  key={category.id} 
-                  value={category.id}
-                >
-                  {category.icon} {category.name}
-                </option>
-              ))}
-            </select>
-            <button 
-              type="button" 
-              className="add-category-btn" 
-              onClick={handleOpenModal}
-              title="Add new category"
-            >
-              +
-            </button>
+          <div className="neo-input-wrapper">
+            <label className="neo-input__label uppercase">Category *</label>
+            <div className="expense-category-wrapper">
+              <select
+                id="categoryId"
+                name="categoryId"
+                value={formData.categoryId}
+                onChange={handleChange}
+                required
+                className="neo-input neo-select"
+              >
+                <option value="">SELECT CATEGORY</option>
+                {categories.map((category) => (
+                  <option 
+                    key={category.id} 
+                    value={category.id}
+                  >
+                    {category.icon} {category.name}
+                  </option>
+                ))}
+              </select>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleOpenModal}
+                className="expense-add-category-btn"
+              >
+                + NEW
+              </Button>
+            </div>
           </div>
-        </div>
 
-        <div className="form-group">
-          <label htmlFor="description">Description</label>
-          <textarea
+          <Input.TextArea
+            label="Description (Optional)"
             id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Enter expense description (optional)"
-            rows="3"
+            placeholder="ADD NOTES ABOUT THIS EXPENSE..."
+            rows={3}
           />
-        </div>
 
-        <button type="submit" className="submit-btn" disabled={loading}>
-          {loading ? 'Adding...' : 'Add Expense'}
-        </button>
-      </form>
+          <Button 
+            type="submit"
+            variant="primary"
+            size="lg"
+            fullWidth
+            disabled={loading}
+          >
+            {loading ? '⏳ ADDING...' : '→ ADD EXPENSE NOW'}
+          </Button>
+        </form>
+      </Card.Body>
 
       <CategoryModal 
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onCategoryAdded={handleCategoryAdded}
       />
-    </div>
+    </Card>
   );
 }
 

@@ -37,6 +37,8 @@ obj/
 *.http
 
 # ASP.NET Core
+appsettings.json
+appsettings.Production.json
 appsettings.Development.json
 
 # =========================

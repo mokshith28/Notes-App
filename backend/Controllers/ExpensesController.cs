@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using backend.Data;
+﻿using backend.Data;
 using backend.DTOs; 
 using backend.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace backend.Controllers
 {
@@ -23,7 +24,15 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ExpenseResponseDTO>>> GetExpenses()
         {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Unauthorized("Invalid token.");
+            }
+            int loggedInUserId = int.Parse(userIdString);
+
             return await _context.Expenses
+                .Where(e => e.UserId == loggedInUserId)
                 .OrderByDescending(e => e.TransactionDate)
                 .Select(e => new ExpenseResponseDTO
                 {
@@ -44,7 +53,15 @@ namespace backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ExpenseResponseDTO>> GetExpense(int id)
         {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Unauthorized("Invalid token.");
+            }
+            int loggedInUserId = int.Parse(userIdString);
+
             var expense = await _context.Expenses
+                .Where(e => e.UserId == loggedInUserId)
                 .Select(e => new ExpenseResponseDTO
                 {
                     Id = e.Id,
@@ -71,9 +88,16 @@ namespace backend.Controllers
         [HttpPost]
         public async Task<ActionResult<ExpenseResponseDTO>> PostExpense(ExpenseCreateDTO dto)
         {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Unauthorized("Invalid token.");
+            }
+            int loggedInUserId = int.Parse(userIdString);
+
             var newExpense = new Expense
             {
-                UserId = dto.UserId,
+                UserId = loggedInUserId,
                 CategoryId = dto.CategoryId,
                 Title = dto.Title,
                 Amount = dto.Amount,

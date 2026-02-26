@@ -68,7 +68,6 @@ function ExpenseForm({ onExpenseAdded }) {
 
     try {
       const expenseData = {
-        UserId: Number(formData.userId),
         CategoryId: Number(formData.categoryId),
         Title: formData.title,
         Amount: Number(formData.amount),
@@ -79,7 +78,6 @@ function ExpenseForm({ onExpenseAdded }) {
       const newExpense = await expenseService.createExpense(expenseData);
       // Reset form
       setFormData({
-        userId: 1,
         categoryId: '',
         title: '',
         amount: '',
@@ -145,49 +143,34 @@ function ExpenseForm({ onExpenseAdded }) {
           </div>
         </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="categoryId">Category *</label>
-            <div className="category-input-wrapper">
-              <select
-                id="categoryId"
-                name="categoryId"
-                value={formData.categoryId}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select a category</option>
-                {categories.map((category) => (
-                  <option 
-                    key={category.id} 
-                    value={category.id}
-                  >
-                    {category.icon} {category.name}
-                  </option>
-                ))}
-              </select>
-              <button 
-                type="button" 
-                className="add-category-btn" 
-                onClick={handleOpenModal}
-                title="Add new category"
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="userId">User ID</label>
-            <input
-              type="number"
-              id="userId"
-              name="userId"
-              value={formData.userId}
+        <div className="form-group">
+          <label htmlFor="categoryId">Category *</label>
+          <div className="category-input-wrapper">
+            <select
+              id="categoryId"
+              name="categoryId"
+              value={formData.categoryId}
               onChange={handleChange}
               required
-              min="1"
-            />
+            >
+              <option value="">Select a category</option>
+              {categories.map((category) => (
+                <option 
+                  key={category.id} 
+                  value={category.id}
+                >
+                  {category.icon} {category.name}
+                </option>
+              ))}
+            </select>
+            <button 
+              type="button" 
+              className="add-category-btn" 
+              onClick={handleOpenModal}
+              title="Add new category"
+            >
+              +
+            </button>
           </div>
         </div>
 

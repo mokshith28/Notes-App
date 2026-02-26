@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using backend.Data;
+﻿using backend.Data;
 using backend.DTOs;
 using backend.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace backend.Controllers
 {
@@ -23,7 +24,15 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryResponseDTO>>> GetCategories()
         {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Unauthorized("Invalid token.");
+            }
+            int loggedInUserId = int.Parse(userIdString);
+
             return await _context.Categories
+                .Where(e => e.UserId == loggedInUserId)
                 .OrderBy(c => c.Type)
                 .ThenBy(c => c.Name)
                 .Select(c => new CategoryResponseDTO
@@ -44,7 +53,15 @@ namespace backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryResponseDTO>> GetCategory(int id)
         {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Unauthorized("Invalid token.");
+            }
+            int loggedInUserId = int.Parse(userIdString);
+
             var category = await _context.Categories
+                .Where(e => e.UserId == loggedInUserId)
                 .Select(c => new CategoryResponseDTO
                 {
                     Id = c.Id,
@@ -70,9 +87,16 @@ namespace backend.Controllers
         [HttpPost]
         public async Task<ActionResult<CategoryResponseDTO>> PostCategory(CategoryCreateDTO dto)
         {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Unauthorized("Invalid token.");
+            }
+            int loggedInUserId = int.Parse(userIdString);
+
             var newCategory = new Category
             {
-                UserId = dto.UserId,
+                UserId = loggedInUserId,
                 Name = dto.Name,
                 Type = dto.Type,
                 Color = dto.Color,

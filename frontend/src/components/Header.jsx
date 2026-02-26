@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { profileService } from '../services/profileService';
+import Badge from './ui/Badge';
 import './Header.css';
 
 function Header() {
@@ -44,34 +45,50 @@ function Header() {
 
 
   return (
-    <header className="app-header">
-      <div className="header-content">
-        <div className="header-left" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
-          <h1>💰 Expense Tracker</h1>
-          <p className="app-subtitle">Track your expenses and manage your budget</p>
+    <header className="neo-header">
+      <div className="neo-header__container">
+        <div className="neo-header__logo-section" onClick={handleLogoClick}>
+          <div className="neo-header__logo">
+            <Badge variant="accent" size="lg" className="neo-header__logo-badge">
+              💰
+            </Badge>
+            <span className="neo-header__logo-text uppercase">
+              EXPENSE TRACKER
+            </span>
+          </div>
         </div>
-        <div className="header-right">
-          <button className="profile-icon-btn" onClick={handleProfileClick} aria-label="Profile">
+
+        <nav className="neo-header__nav">
+          <button 
+            className="neo-header__profile-btn" 
+            onClick={handleProfileClick}
+            aria-label="Go to Profile"
+          >
             {profileImageUrl ? (
-              <img src={profileImageUrl} alt="Profile" className="profile-icon-img" />
+              <div className="neo-header__profile-image">
+                <img src={profileImageUrl} alt="Profile" />
+              </div>
             ) : (
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="32" 
-                height="32" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
+              <div className="neo-header__profile-placeholder">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="24" 
+                  height="24" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="3" 
+                  strokeLinecap="square" 
+                  strokeLinejoin="miter"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
             )}
+            <span className="uppercase">PROFILE</span>
           </button>
-        </div>
+        </nav>
       </div>
     </header>
   );

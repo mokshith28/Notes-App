@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { expenseService } from '../services/expenseService';
+import Badge from './ui/Badge';
+import Button from './ui/Button';
 import './ExpenseItem.css';
 
 function ExpenseItem({ expense, onDelete }) {
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this expense?')) {
-      return;
-    }
-
     setDeleting(true);
     try {
       await expenseService.deleteExpense(expense.id);
@@ -38,39 +36,51 @@ function ExpenseItem({ expense, onDelete }) {
     }).format(amount);
   };
 
+  const isIncome = expense.categoryType === 'Income';
+  debugger
   return (
-    <div className="expense-item">
-      <div className="expense-icon" style={{ backgroundColor: expense.categoryColor || '#646cff' }}>
-        {expense.categoryIcon || '💰'}
-      </div>
-      
-      <div className="expense-details">
-        <div className="expense-header">
-          <h3 className="expense-title">{expense.title}</h3>
-          <span className="expense-amount">{formatAmount(expense.amount)}</span>
+    <div className={`expense-item ${isIncome ? 'income-item' : 'expense-item-type'}`}>
+      <div className="expense-main">
+        <div className="expense-icon-wrapper">
+          <Badge variant="primary" className="expense-icon" style={{ transform: `rotate(${Math.random() * 10 - 5}deg)` }}>
+            {expense.categoryIcon || '💰'}
+          </Badge>
         </div>
         
-        <div className="expense-meta">
-          <span className="expense-category">{expense.categoryName}</span>
-          <span className="expense-date">{formatDate(expense.transactionDate)}</span>
-          {expense.username && (
-            <span className="expense-user">👤 {expense.username}</span>
+        <div className="expense-details">
+          <div className="expense-top">
+            <h3 className="expense-title">{expense.title}</h3>
+            <span className={`expense-amount ${isIncome ? 'income-amount' : 'expense-amount-type'}`}>
+              {isIncome ? '+' : '-'}{formatAmount(expense.amount)}
+            </span>
+          </div>
+          
+          <div className="expense-meta">
+            <Badge variant="accent" size="small" className="expense-category-badge">
+              {expense.categoryName}
+            </Badge>
+            <Badge variant={isIncome ? 'success' : 'danger'} size="small">
+              {isIncome ? '💰 Income' : '💸 Expense'}
+            </Badge>
+            <span className="expense-date">{formatDate(expense.transactionDate)}</span>
+          </div>
+          
+          {expense.description && (
+            <p className="expense-description">{expense.description}</p>
           )}
         </div>
-        
-        {expense.description && (
-          <p className="expense-description">{expense.description}</p>
-        )}
       </div>
 
-      <button
-        className="delete-btn"
+      <Button
+        variant="accent"
+        size="small"
         onClick={handleDelete}
         disabled={deleting}
+        className="expense-delete-btn"
         title="Delete expense"
       >
         {deleting ? '⏳' : '🗑️'}
-      </button>
+      </Button>
     </div>
   );
 }

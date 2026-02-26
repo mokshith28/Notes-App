@@ -1,0 +1,95 @@
+/* ========================================
+   NEO-BRUTALIST INPUT COMPONENT
+   ======================================== */
+
+.neo-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.neo-input__label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--neo-black);
+}
+
+.neo-input {
+  padding: 1rem 1.25rem;
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: 1rem;
+  border: var(--border-default);
+  background: var(--neo-white);
+  color: var(--neo-black);
+  transition: all 0.1s ease-out;
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+}
+
+.neo-input::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+  font-weight: 500;
+}
+
+/* Focus State - Yellow Highlight */
+.neo-input:focus {
+  outline: none;
+  background: var(--neo-secondary);
+  box-shadow: var(--shadow-md);
+  transform: translate(-2px, -2px);
+}
+
+/* Textarea */
+.neo-textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: var(--font-primary);
+}
+
+/* Select */
+.neo-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='4' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.25rem;
+  padding-right: 3rem;
+  cursor: pointer;
+}
+
+/* Error State */
+.neo-input--error {
+  border-color: var(--neo-accent);
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.neo-input__error {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--neo-accent);
+  margin-top: 0.25rem;
+}
+
+/* Full Width */
+.neo-input--full {
+  width: 100%;
+}
+
+/* Disabled */
+.neo-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .neo-input {
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+  }
+}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import ExpenseForm from './ExpenseForm';
 import ExpenseList from './ExpenseList';
+import Badge from './ui/Badge';
 import { expenseService } from '../services/expenseService';
 import './Home.css';
 
@@ -37,8 +38,44 @@ function Home() {
     setExpenses(expenses.filter(expense => expense.id !== id));
   };
 
+  // Calculate totals
+  const totalIncome = expenses
+    .filter(expense => expense.categoryType === 'income')
+    .reduce((sum, expense) => sum + expense.amount, 0);
+
+  const totalExpense = expenses
+    .filter(expense => expense.categoryType === 'expense')
+    .reduce((sum, expense) => sum + expense.amount, 0);
+
+  const balance = totalIncome - totalExpense;
+
   return (
     <main className="app-content">
+      <div className="summary-cards">
+        <Badge variant="success" className="summary-card income-card">
+          <span className="summary-emoji">💰</span>
+          <div className="summary-details">
+            <span className="summary-label">INCOME</span>
+            <span className="summary-value">${totalIncome.toFixed(2)}</span>
+          </div>
+        </Badge>
+        <Badge variant="danger" className="summary-card expense-card">
+          <span className="summary-emoji">💸</span>
+          <div className="summary-details">
+            <span className="summary-label">EXPENSES</span>
+            <span className="summary-value">${totalExpense.toFixed(2)}</span>
+          </div>
+        </Badge>
+        <Badge variant="primary" className="summary-card balance-card">
+          <span className="summary-emoji">💵</span>
+          <div className="summary-details">
+            <span className="summary-label">BALANCE</span>
+            <span className="summary-value" style={{color: balance >= 0 ? '#22c55e' : '#ef4444'}}>
+              ${Math.abs(balance).toFixed(2)}
+            </span>
+          </div>
+        </Badge>
+      </div>
       <ExpenseForm onExpenseAdded={handleExpenseAdded} />
       <ExpenseList
         expenses={expenses}

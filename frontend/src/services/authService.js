@@ -1,6 +1,6 @@
 import { jwtDecode } from 'jwt-decode';
+import { API_BASE_URL } from '../config/api';
 
-const API_BASE_URL = `https://localhost:7211/api`;
 const TOKEN_KEY = 'accessToken';
 
 // JWT claim mappings for .NET tokens

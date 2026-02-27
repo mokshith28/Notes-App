@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { profileService } from '../services/profileService';
+import { BASE_URL } from '../config/api';
 import Badge from './ui/Badge';
 import './Header.css';
 
@@ -13,7 +14,7 @@ function Header() {
       try {
         const profile = await profileService.getProfile();
         if (profile.profileImageUrl) {
-          setProfileImageUrl(`http://${window.location.hostname}:5090${profile.profileImageUrl}`);
+          setProfileImageUrl(`${BASE_URL}${profile.profileImageUrl}`);
         } else {
           setProfileImageUrl(null);
         }

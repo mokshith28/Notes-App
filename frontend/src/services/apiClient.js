@@ -1,6 +1,5 @@
 import { authService } from './authService';
-
-const API_BASE_URL = `http://${window.location.hostname}:5090/api`;
+import { API_BASE_URL } from '../config/api';
 
 /**
  * Creates fetch headers with authorization token

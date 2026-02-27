@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { authService } from '../services/authService';
 import { expenseService } from '../services/expenseService';
 import { profileService } from '../services/profileService';
+import { BASE_URL } from '../config/api';
 import Card from './ui/Card';
 import Button from './ui/Button';
 import Input from './ui/Input';
@@ -216,7 +217,7 @@ function Profile() {
 
   const getProfileImageUrl = () => {
     if (profile?.profileImageUrl) {
-      return `http://${window.location.hostname}:5090${profile.profileImageUrl}`;
+      return `${BASE_URL}${profile.profileImageUrl}`;
     }
     return null;
   };

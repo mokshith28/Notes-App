@@ -2,48 +2,57 @@ import { authService } from './authService';
 
 const API_BASE_URL = `http://${window.location.hostname}:5090/api`;
 
-// Fetch wrapper that automatically handles token refresh on 401 errors
-export async function authenticatedFetch(url, options = {}) {
-  // Get valid access token (will refresh if expired)
-  const token = await authService.getValidAccessToken();
-
-  // Add authorization header
-  const headers = {
-    ...options.headers,
+/**
+ * Creates fetch headers with authorization token
+ */
+function createAuthHeaders(token, customHeaders = {}) {
+  return {
+    ...customHeaders,
     'Authorization': `Bearer ${token}`,
   };
+}
 
-  // Make the request
-  let response = await fetch(url, {
+/**
+ * Executes a fetch request with credentials
+ */
+function executeFetch(url, options, token) {
+  return fetch(url, {
     ...options,
-    headers,
+    headers: createAuthHeaders(token, options.headers),
     credentials: 'include',
   });
+}
 
-  // If 401 Unauthorized, try to refresh token and retry once
+/**
+ * Handles session expiration by clearing auth state and redirecting to login
+ */
+function handleSessionExpired(error) {
+  console.error('Session expired:', error);
+  authService.clearSession();
+  window.location.href = '/';
+  throw new Error('Session expired. Please login again.');
+}
+
+/**
+ * Fetch wrapper that automatically handles token refresh on 401 errors
+ */
+export async function authenticatedFetch(url, options = {}) {
+  const token = authService.getAccessToken();
+
+  if (!token) {
+    handleSessionExpired(new Error('No access token found'));
+  }
+
+  let response = await executeFetch(url, options, token);
+
+  // Handle 401 Unauthorized - refresh token and retry once
   if (response.status === 401) {
     try {
-      // Attempt to refresh the token (this uses the lock mechanism in authService)
       await authService.refreshAccessToken();
-
-      // Get the new token
       const newToken = authService.getAccessToken();
-
-      // Retry the request with new token
-      response = await fetch(url, {
-        ...options,
-        headers: {
-          ...options.headers,
-          'Authorization': `Bearer ${newToken}`,
-        },
-        credentials: 'include',
-      });
-    } catch (refreshError) {
-      // If refresh fails, redirect to login
-      console.error('Token refresh failed:', refreshError);
-      localStorage.removeItem('accessToken');
-      window.location.href = '/';
-      throw new Error('Session expired. Please login again.');
+      response = await executeFetch(url, options, newToken);
+    } catch (error) {
+      handleSessionExpired(error);
     }
   }
 

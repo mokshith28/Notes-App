@@ -1,93 +1,73 @@
-import { authService } from './authService';
+import { authenticatedFetch, API_BASE_URL } from './apiClient';
 
-const API_BASE_URL = `http://${window.location.hostname}:5090/api`;
+/**
+ * Makes an authenticated API request and handles the response
+ */
+async function makeRequest(url, options = {}) {
+  const response = await authenticatedFetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    ...options,
+  });
 
-// Helper function to get auth headers
-const getAuthHeaders = async () => {
-  const token = await authService.getValidAccessToken();
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
-  };
-};
+  if (!response.ok) {
+    const error = await response.json().catch(() => null);
+    throw new Error(error?.message || `Request failed with status ${response.status}`);
+  }
+
+  return response.status === 204 ? true : response.json();
+}
 
 export const expenseService = {
-  // Get all expenses
+  /**
+   * Get all expenses for the authenticated user
+   */
   async getAllExpenses() {
-    const response = await fetch(`${API_BASE_URL}/expenses`, {
-      headers: await getAuthHeaders(),
-      credentials: 'include',
-    });
-    if (!response.ok) {
-      throw new Error('Failed to fetch expenses');
-    }
-    return response.json();
+    return makeRequest(`${API_BASE_URL}/expenses`);
   },
 
-  // Get single expense by ID
+  /**
+   * Get a single expense by ID
+   */
   async getExpenseById(id) {
-    const response = await fetch(`${API_BASE_URL}/expenses/${id}`, {
-      headers: await getAuthHeaders(),
-      credentials: 'include',
-    });
-    if (!response.ok) {
-      throw new Error('Failed to fetch expense');
-    }
-    return response.json();
+    return makeRequest(`${API_BASE_URL}/expenses/${id}`);
   },
 
-  // Create new expense
+  /**
+   * Create a new expense
+   */
   async createExpense(expenseData) {
-    const response = await fetch(`${API_BASE_URL}/expenses`, {
+    return makeRequest(`${API_BASE_URL}/expenses`, {
       method: 'POST',
-      headers: await getAuthHeaders(),
-      credentials: 'include',
       body: JSON.stringify(expenseData),
     });
-
-    if (!response.ok) {
-      throw new Error('Failed to create expense');
-    }
-    return response.json();
   },
 
-  // Delete expense
+  /**
+   * Delete an expense
+   */
   async deleteExpense(id) {
-    const response = await fetch(`${API_BASE_URL}/expenses/${id}`, {
+    return makeRequest(`${API_BASE_URL}/expenses/${id}`, {
       method: 'DELETE',
-      headers: await getAuthHeaders(),
-      credentials: 'include',
     });
-    if (!response.ok) {
-      throw new Error('Failed to delete expense');
-    }
-    return response.status === 204;
   },
 
-  // Get all categories
+  /**
+   * Get all categories for the authenticated user
+   */
   async getCategories() {
-    const response = await fetch(`${API_BASE_URL}/categories`, {
-      headers: await getAuthHeaders(),
-      credentials: 'include',
-    });
-    if (!response.ok) {
-      throw new Error('Failed to fetch categories');
-    }
-    return response.json();
+    return makeRequest(`${API_BASE_URL}/categories`);
   },
 
-  // Create new category
+  /**
+   * Create a new category
+   */
   async createCategory(categoryData) {
-    const response = await fetch(`${API_BASE_URL}/categories`, {
+    return makeRequest(`${API_BASE_URL}/categories`, {
       method: 'POST',
-      headers: await getAuthHeaders(),
-      credentials: 'include',
       body: JSON.stringify(categoryData),
     });
-
-    if (!response.ok) {
-      throw new Error('Failed to create category');
-    }
-    return response.json();
   },
 };

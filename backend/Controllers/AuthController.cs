@@ -130,29 +130,6 @@ namespace backend.Controllers
             });
         }
 
-        [HttpPost("logout")]
-        [Authorize]
-        public async Task<ActionResult> Logout()
-        {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var user = await _context.Users.FindAsync(userId);
-
-            if (user == null)
-            {
-                return NotFound("User not found.");
-            }
-
-            // Clear refresh token from database
-            user.RefreshToken = null;
-            user.RefreshTokenExpiryTime = null;
-            await _context.SaveChangesAsync();
-
-            // Clear refresh token cookie
-            Response.Cookies.Delete("refreshToken");
-
-            return Ok(new { message = "Logged out successfully." });
-        }
-
         private string CreateAccessToken(User user)
         {
             // Add user data to the token payload (Claims)
@@ -198,6 +175,29 @@ namespace backend.Controllers
                 Expires = expiry
             };
             Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+        }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<ActionResult> Logout()
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Clear refresh token from database
+            user.RefreshToken = null;
+            user.RefreshTokenExpiryTime = null;
+            await _context.SaveChangesAsync();
+
+            // Clear refresh token cookie
+            Response.Cookies.Delete("refreshToken");
+
+            return Ok(new { message = "Logged out successfully." });
         }
     }
 }

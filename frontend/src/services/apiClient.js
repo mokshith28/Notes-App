@@ -1,12 +1,12 @@
 import { authService } from './authService';
 
-const API_BASE_URL = 'https://localhost:7211/api';
+const API_BASE_URL = `http://${window.location.hostname}:5090/api`;
 
 // Fetch wrapper that automatically handles token refresh on 401 errors
 export async function authenticatedFetch(url, options = {}) {
   // Get valid access token (will refresh if expired)
   const token = await authService.getValidAccessToken();
-  
+
   // Add authorization header
   const headers = {
     ...options.headers,
@@ -25,10 +25,10 @@ export async function authenticatedFetch(url, options = {}) {
     try {
       // Attempt to refresh the token (this uses the lock mechanism in authService)
       await authService.refreshAccessToken();
-      
+
       // Get the new token
       const newToken = authService.getAccessToken();
-      
+
       // Retry the request with new token
       response = await fetch(url, {
         ...options,

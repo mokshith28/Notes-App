@@ -13,7 +13,7 @@ function Header() {
       try {
         const profile = await profileService.getProfile();
         if (profile.profileImageUrl) {
-          setProfileImageUrl(`https://localhost:7211${profile.profileImageUrl}`);
+          setProfileImageUrl(`http://${window.location.hostname}:5090${profile.profileImageUrl}`);
         } else {
           setProfileImageUrl(null);
         }

@@ -37,7 +37,6 @@ function ExpenseItem({ expense, onDelete }) {
   };
 
   const isIncome = expense.categoryType === 'Income';
-  debugger
   return (
     <div className={`expense-item ${isIncome ? 'income-item' : 'expense-item-type'}`}>
       <div className="expense-main">

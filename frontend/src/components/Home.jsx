@@ -40,11 +40,11 @@ function Home() {
 
   // Calculate totals
   const totalIncome = expenses
-    .filter(expense => expense.categoryType === 'income')
+    .filter(expense => expense.categoryType === 'Income')
     .reduce((sum, expense) => sum + expense.amount, 0);
 
   const totalExpense = expenses
-    .filter(expense => expense.categoryType === 'expense')
+    .filter(expense => expense.categoryType === 'Expense')
     .reduce((sum, expense) => sum + expense.amount, 0);
 
   const balance = totalIncome - totalExpense;

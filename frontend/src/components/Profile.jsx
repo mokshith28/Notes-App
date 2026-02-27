@@ -60,11 +60,11 @@ function Profile() {
       const categories = await expenseService.getCategories();
 
       const totalIncome = expenses
-        .filter(expense => expense.categoryType === 'income')
+        .filter(expense => expense.categoryType === 'Income')
         .reduce((sum, expense) => sum + expense.amount, 0);
 
       const totalExpense = expenses
-        .filter(expense => expense.categoryType === 'expense')
+        .filter(expense => expense.categoryType === 'Expense')
         .reduce((sum, expense) => sum + expense.amount, 0);
 
       const totalAmount = totalIncome - totalExpense;
@@ -216,7 +216,7 @@ function Profile() {
 
   const getProfileImageUrl = () => {
     if (profile?.profileImageUrl) {
-      return `https://localhost:7211${profile.profileImageUrl}`;
+      return `http://${window.location.hostname}:5090${profile.profileImageUrl}`;
     }
     return null;
   };
@@ -280,7 +280,7 @@ function Profile() {
                 </Badge>
                 <Badge variant="primary" className="stat-badge stat-4">
                   <span className="stat-emoji">💵</span>
-                  <span className="stat-value" style={{color: stats.totalAmount >= 0 ? '#22c55e' : '#ef4444'}}>
+                  <span className="stat-value" style={{color: stats.totalAmount >= 0 ? '#119842' : '#9f1717'}}>
                     ${Math.abs(stats.totalAmount).toFixed(2)}
                   </span>
                   <span className="stat-label">BALANCE</span>

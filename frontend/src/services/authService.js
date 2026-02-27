@@ -1,6 +1,6 @@
 import { jwtDecode } from 'jwt-decode';
 
-const API_BASE_URL = 'https://localhost:7211/api';
+const API_BASE_URL = `http://${window.location.hostname}:5090/api`;
 
 // Track ongoing refresh promise to prevent multiple simultaneous refreshes
 let refreshPromise = null;
@@ -51,7 +51,7 @@ export const authService = {
   // Logout user
   async logout() {
     const accessToken = this.getAccessToken();
-    
+
     if (accessToken) {
       try {
         await fetch(`${API_BASE_URL}/auth/logout`, {

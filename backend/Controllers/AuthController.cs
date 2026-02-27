@@ -113,7 +113,7 @@ namespace backend.Controllers
             // 4. Generate new access token and refresh token
             var newAccessToken = CreateAccessToken(user);
             var newRefreshToken = GenerateRefreshToken();
-            var newRefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+            var newRefreshTokenExpiry = DateTime.UtcNow.AddDays(_configuration.GetValue<int>("Jwt:RefreshTokenExpireDays"));
 
             // 5. Update refresh token in database
             user.RefreshToken = newRefreshToken;
@@ -172,7 +172,7 @@ namespace backend.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:ExpireMinutes")),
+                expires: DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:AccessTokenExpireMinutes")),
                 signingCredentials: creds
             );
 

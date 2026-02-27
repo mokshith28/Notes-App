@@ -57,27 +57,6 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// --- START SEEDING LOGIC ---
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<ExpenseDbContext>();
-
-        // Optional: This line automatically runs pending migrations!
-        // context.Database.Migrate(); 
-
-        DbSeeder.SeedData(context);
-    }
-    catch (Exception ex)
-    {
-        // Log errors if the database connection fails
-        Console.WriteLine($"An error occurred seeding the DB: {ex.Message}");
-    }
-}
-// --- END SEEDING LOGIC ---
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

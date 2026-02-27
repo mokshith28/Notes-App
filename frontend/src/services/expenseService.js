@@ -1,6 +1,6 @@
 import { authService } from './authService';
 
-const API_BASE_URL = 'https://localhost:7211/api';
+const API_BASE_URL = `http://${window.location.hostname}:5090/api`;
 
 // Helper function to get auth headers
 const getAuthHeaders = async () => {

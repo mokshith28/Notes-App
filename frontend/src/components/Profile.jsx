@@ -345,7 +345,7 @@ function Profile() {
                   </div>
                   <div className="image-actions">
                     <label htmlFor="image-upload" className="upload-button">
-                      <Button as="span" variant="primary" size="small">
+                      <Button as="span" variant="primary" size="small" type="button">
                         📷 CHOOSE IMAGE
                       </Button>
                     </label>

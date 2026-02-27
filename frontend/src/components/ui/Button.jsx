@@ -9,6 +9,7 @@ function Button({
   disabled = false,
   onClick,
   className = '',
+  as: Component = 'button',
   ...props 
 }) {
   const classes = [
@@ -21,15 +22,15 @@ function Button({
   ].filter(Boolean).join(' ');
 
   return (
-    <button
-      type={type}
+    <Component
+      type={Component === 'button' ? type : undefined}
       className={classes}
       onClick={onClick}
       disabled={disabled}
       {...props}
     >
       {children}
-    </button>
+    </Component>
   );
 }
 

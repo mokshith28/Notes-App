@@ -54,9 +54,12 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
   }
+
   50% {
     transform: translateY(-10px) rotate(3deg);
   }
@@ -175,6 +178,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -228,34 +232,38 @@
 
     left: -100px;
 
-    transform: scaleX(1); /* Facing Right */
+    transform: scaleX(1);
+    /* Facing Right */
 
   }
- 
+
   /* 20%: Walks right along the Email input before jumping */
 
   20% {
 
     top: -40px;
 
-    left: 50px; /* Moves 150px to the right */
+    left: 50px;
+    /* Moves 150px to the right */
 
     transform: scaleX(1);
 
   }
- 
+
   /* 25%: Apex of Jump 1 - Recalculated for the new jump distance */
 
   25% {
 
-    top: -70px;  /* Jumps up 30px */
+    top: -70px;
+    /* Jumps up 30px */
 
-    left: 112px; /* Halfway between 50px and 175px */
+    left: 112px;
+    /* Halfway between 50px and 175px */
 
     transform: scaleX(1);
 
   }
- 
+
   /* 30%: Lands on the right side of the Password input */
 
   30% {
@@ -267,7 +275,7 @@
     transform: scaleX(1);
 
   }
- 
+
   /* 31%: Quickly turns around to face left */
 
   31% {
@@ -276,10 +284,11 @@
 
     left: 175px;
 
-    transform: scaleX(-1); /* Facing Left */
+    transform: scaleX(-1);
+    /* Facing Left */
 
   }
- 
+
   /* 50%: Walks left along the Password input */
 
   50% {
@@ -291,19 +300,22 @@
     transform: scaleX(-1);
 
   }
- 
+
   /* 55%: Apex of Jump 2 - Snappy jump to the left */
 
   55% {
 
-    top: 90px;   /* Jumps up 48px */
+    top: 90px;
+    /* Jumps up 48px */
 
-    left: -12px; /* Halfway between 75px and -100px */
+    left: -12px;
+    /* Halfway between 75px and -100px */
 
-    transform: scaleX(-1); /* Stays facing left */
+    transform: scaleX(-1);
+    /* Stays facing left */
 
   }
- 
+
   /* 60% to 100%: Lands at the Login button and stays facing left */
 
   60% {
@@ -332,7 +344,8 @@
 
     left: -100px;
 
-    transform: scaleX(1); /* Facing Right */
+    transform: scaleX(1);
+    /* Facing Right */
 
   }
 
@@ -347,10 +360,10 @@
   }
 
 }
- 
 
- 
- 
+
+
+
 
 /* Messages */
 .login-message {
@@ -465,7 +478,7 @@
   .login-hero__shape--1 {
     width: 200px;
     height: 200px;
-    left: 10%;
+    left: 6%;
   }
 
   .login-hero__shape--2 {

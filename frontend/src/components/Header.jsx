@@ -2,7 +2,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { profileService } from '../services/profileService';
 import { BASE_URL } from '../config/api';
-import Badge from './ui/Badge';
 import './Header.css';
 
 function Header() {
@@ -50,9 +49,11 @@ function Header() {
       <div className="neo-header__container">
         <div className="neo-header__logo-section" onClick={handleLogoClick}>
           <div className="neo-header__logo">
-            <Badge variant="accent" size="lg" className="neo-header__logo-badge">
-              💰
-            </Badge>
+            <img
+              src="/wallet-icon.png"
+              alt="Expense Tracker"
+              className="neo-header__logo-img"
+            />
             <span className="neo-header__logo-text uppercase">
               EXPENSE TRACKER
             </span>

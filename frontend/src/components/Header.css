@@ -41,8 +41,12 @@
   gap: 1rem;
 }
 
-.neo-header__logo-badge {
-  box-shadow: var(--shadow-sm);
+.neo-header__logo-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
 }
 
 .neo-header__logo-text {

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { authService } from '../services/authService';
 import { expenseService } from '../services/expenseService';
 import { profileService } from '../services/profileService';
+import { BASE_URL } from '../config/api';
 import Card from './ui/Card';
 import Button from './ui/Button';
 import Input from './ui/Input';
@@ -60,11 +61,11 @@ function Profile() {
       const categories = await expenseService.getCategories();
 
       const totalIncome = expenses
-        .filter(expense => expense.categoryType === 'income')
+        .filter(expense => expense.categoryType === 'Income')
         .reduce((sum, expense) => sum + expense.amount, 0);
 
       const totalExpense = expenses
-        .filter(expense => expense.categoryType === 'expense')
+        .filter(expense => expense.categoryType === 'Expense')
         .reduce((sum, expense) => sum + expense.amount, 0);
 
       const totalAmount = totalIncome - totalExpense;
@@ -216,7 +217,7 @@ function Profile() {
 
   const getProfileImageUrl = () => {
     if (profile?.profileImageUrl) {
-      return `https://localhost:7211${profile.profileImageUrl}`;
+      return `${BASE_URL}${profile.profileImageUrl}`;
     }
     return null;
   };
@@ -280,7 +281,7 @@ function Profile() {
                 </Badge>
                 <Badge variant="primary" className="stat-badge stat-4">
                   <span className="stat-emoji">💵</span>
-                  <span className="stat-value" style={{color: stats.totalAmount >= 0 ? '#22c55e' : '#ef4444'}}>
+                  <span className="stat-value" style={{color: stats.totalAmount >= 0 ? '#119842' : '#9f1717'}}>
                     ${Math.abs(stats.totalAmount).toFixed(2)}
                   </span>
                   <span className="stat-label">BALANCE</span>

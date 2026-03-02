@@ -113,7 +113,7 @@ namespace backend.Controllers
             // 4. Generate new access token and refresh token
             var newAccessToken = CreateAccessToken(user);
             var newRefreshToken = GenerateRefreshToken();
-            var newRefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+            var newRefreshTokenExpiry = DateTime.UtcNow.AddDays(_configuration.GetValue<int>("Jwt:RefreshTokenExpireDays"));
 
             // 5. Update refresh token in database
             user.RefreshToken = newRefreshToken;
@@ -128,29 +128,6 @@ namespace backend.Controllers
             {
                 accessToken = newAccessToken
             });
-        }
-
-        [HttpPost("logout")]
-        [Authorize]
-        public async Task<ActionResult> Logout()
-        {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var user = await _context.Users.FindAsync(userId);
-
-            if (user == null)
-            {
-                return NotFound("User not found.");
-            }
-
-            // Clear refresh token from database
-            user.RefreshToken = null;
-            user.RefreshTokenExpiryTime = null;
-            await _context.SaveChangesAsync();
-
-            // Clear refresh token cookie
-            Response.Cookies.Delete("refreshToken");
-
-            return Ok(new { message = "Logged out successfully." });
         }
 
         private string CreateAccessToken(User user)
@@ -172,7 +149,7 @@ namespace backend.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:ExpireMinutes")),
+                expires: DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:AccessTokenExpireMinutes")),
                 signingCredentials: creds
             );
 
@@ -198,6 +175,29 @@ namespace backend.Controllers
                 Expires = expiry
             };
             Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+        }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<ActionResult> Logout()
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Clear refresh token from database
+            user.RefreshToken = null;
+            user.RefreshTokenExpiryTime = null;
+            await _context.SaveChangesAsync();
+
+            // Clear refresh token cookie
+            Response.Cookies.Delete("refreshToken");
+
+            return Ok(new { message = "Logged out successfully." });
         }
     }
 }

@@ -1,166 +1,173 @@
 import { jwtDecode } from 'jwt-decode';
+import { API_BASE_URL } from '../config/api';
 
-const API_BASE_URL = 'https://localhost:7211/api';
+const TOKEN_KEY = 'accessToken';
 
-// Track ongoing refresh promise to prevent multiple simultaneous refreshes
+// JWT claim mappings for .NET tokens
+const JWT_CLAIMS = {
+  ID: 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier',
+  USERNAME: 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name',
+  EMAIL: 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
+};
+
+// Prevent concurrent refresh requests
 let refreshPromise = null;
 
+/**
+ * Executes an API request and handles the response
+ */
+async function apiRequest(endpoint, options = {}) {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    credentials: 'include', // Always include cookies
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || data || 'Request failed');
+  }
+
+  return data;
+}
+
+/**
+ * Extracts user data from JWT claims
+ */
+function extractUserData(decoded) {
+  return {
+    id: decoded[JWT_CLAIMS.ID] || decoded.nameid,
+    username: decoded[JWT_CLAIMS.USERNAME] || decoded.unique_name,
+    email: decoded[JWT_CLAIMS.EMAIL] || decoded.email,
+    exp: decoded.exp,
+  };
+}
+
 export const authService = {
-  // Register new user
+  /**
+   * Register a new user
+   */
   async register(userData) {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || data || 'Registration failed');
-    }
-
-    return data;
-  },
-
-  // Login user
-  async login(credentials) {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // Include cookies in request
-      body: JSON.stringify(credentials),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || data || 'Login failed');
-    }
-
-    // Store only access token (refresh token is in HTTP-only cookie)
-    localStorage.setItem('accessToken', data.accessToken);
-
-    return data;
-  },
-
-  // Logout user
-  async logout() {
-    const accessToken = this.getAccessToken();
+    // Add minimum loading time to show animation
+    const [data] = await Promise.all([
+      apiRequest('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(userData),
+      }),
+      new Promise(resolve => setTimeout(resolve, 3000)) // 3 second minimum
+    ]);
     
-    if (accessToken) {
+    return data;
+  },
+
+  /**
+   * Login user and store access token
+   */
+  async login(credentials) {
+    // Add minimum loading time to show animation
+    const [data] = await Promise.all([
+      apiRequest('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+      }),
+      new Promise(resolve => setTimeout(resolve, 3000)) // 3 second minimum
+    ]);
+
+    localStorage.setItem(TOKEN_KEY, data.accessToken);
+    return data;
+  },
+
+  /**
+   * Logout user and clear session
+   */
+  async logout() {
+    const token = this.getAccessToken();
+
+    if (token) {
       try {
         await fetch(`${API_BASE_URL}/auth/logout`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          credentials: 'include', // Include cookies in request
+          credentials: 'include',
         });
       } catch (error) {
         console.error('Logout request failed:', error);
       }
     }
 
-    // Clear access token from localStorage
-    localStorage.removeItem('accessToken');
+    this.clearSession();
   },
 
-  // Get access token
+  /**
+   * Get stored access token
+   */
   getAccessToken() {
-    return localStorage.getItem('accessToken');
+    return localStorage.getItem(TOKEN_KEY);
   },
 
-  // Check if user is authenticated
+  /**
+   * Clear authentication session
+   */
+  clearSession() {
+    localStorage.removeItem(TOKEN_KEY);
+  },
+
+  /**
+   * Check if user is authenticated
+   */
   isAuthenticated() {
     return !!this.getAccessToken();
   },
 
-  // Get user data from JWT access token
+  /**
+   * Decode and extract user data from JWT token
+   */
   getUserData() {
     const token = this.getAccessToken();
-    if (!token) {
-      return null;
-    }
+    if (!token) return null;
 
     try {
       const decoded = jwtDecode(token);
-      return {
-        id: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || decoded.nameid,
-        username: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || decoded.unique_name,
-        email: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || decoded.email,
-        exp: decoded.exp, // Token expiration time
-      };
+      return extractUserData(decoded);
     } catch (error) {
       console.error('Failed to decode token:', error);
       return null;
     }
   },
 
-  // Check if access token is expired
-  isAccessTokenExpired() {
-    const userData = this.getUserData();
-    if (!userData || !userData.exp) {
-      return true;
-    }
-    // Add 10 second buffer to refresh before actual expiry
-    return Date.now() >= (userData.exp * 1000) - 10000;
-  },
-
-  // Refresh the access token using refresh token (from HTTP-only cookie)
+  /**
+   * Refresh the access token using the refresh token cookie
+   * Uses a lock mechanism to prevent concurrent refresh requests
+   */
   async refreshAccessToken() {
-    // If a refresh is already in progress, wait for it
+    // Return existing refresh promise if already in progress
     if (refreshPromise) {
       return refreshPromise;
     }
 
-    // Start a new refresh operation
     refreshPromise = (async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
+        const data = await apiRequest('/auth/refresh-token', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include', // Include cookies (refresh token) in request
         });
 
-        const data = await response.json();
-
-        if (!response.ok) {
-          // If refresh token is invalid, clear access token
-          localStorage.removeItem('accessToken');
-          throw new Error(data.message || data || 'Token refresh failed');
-        }
-
-        // Update access token
-        localStorage.setItem('accessToken', data.accessToken);
-
+        localStorage.setItem(TOKEN_KEY, data.accessToken);
         return data;
+      } catch (error) {
+        this.clearSession();
+        throw error;
       } finally {
-        // Clear the refresh promise when done (success or failure)
         refreshPromise = null;
       }
     })();
 
     return refreshPromise;
-  },
-
-  // Get valid access token (refresh if needed)
-  async getValidAccessToken() {
-    if (this.isAccessTokenExpired()) {
-      try {
-        await this.refreshAccessToken();
-      } catch (error) {
-        console.error('Failed to refresh token:', error);
-        throw error;
-      }
-    }
-    return this.getAccessToken();
   },
 };

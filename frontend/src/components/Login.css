@@ -185,6 +185,7 @@
   margin-bottom: 2rem;
   border-bottom: var(--border-default);
   padding-bottom: 1.5rem;
+  position: relative;
 }
 
 .login-form-title {
@@ -202,6 +203,154 @@
   color: var(--neo-black);
   opacity: 0.7;
 }
+
+/* Loading Mario */
+.login-loading-mario {
+  position: absolute;
+  left: 0;
+  bottom: -240px;
+  width: 240px;
+  height: 240px;
+  animation: marioJump 3s steps(60) forwards;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+@keyframes marioJump {
+
+  /* 0% to 5%: Starts at the left side of the Email input */
+
+  0% {
+
+    top: -40px;
+
+    left: -100px;
+
+    transform: scaleX(1); /* Facing Right */
+
+  }
+ 
+  /* 20%: Walks right along the Email input before jumping */
+
+  20% {
+
+    top: -40px;
+
+    left: 50px; /* Moves 150px to the right */
+
+    transform: scaleX(1);
+
+  }
+ 
+  /* 25%: Apex of Jump 1 - Recalculated for the new jump distance */
+
+  25% {
+
+    top: -70px;  /* Jumps up 30px */
+
+    left: 112px; /* Halfway between 50px and 175px */
+
+    transform: scaleX(1);
+
+  }
+ 
+  /* 30%: Lands on the right side of the Password input */
+
+  30% {
+
+    top: 138px;
+
+    left: 175px;
+
+    transform: scaleX(1);
+
+  }
+ 
+  /* 31%: Quickly turns around to face left */
+
+  31% {
+
+    top: 138px;
+
+    left: 175px;
+
+    transform: scaleX(-1); /* Facing Left */
+
+  }
+ 
+  /* 50%: Walks left along the Password input */
+
+  50% {
+
+    top: 138px;
+
+    left: 75px;
+
+    transform: scaleX(-1);
+
+  }
+ 
+  /* 55%: Apex of Jump 2 - Snappy jump to the left */
+
+  55% {
+
+    top: 90px;   /* Jumps up 48px */
+
+    left: -12px; /* Halfway between 75px and -100px */
+
+    transform: scaleX(-1); /* Stays facing left */
+
+  }
+ 
+  /* 60% to 100%: Lands at the Login button and stays facing left */
+
+  60% {
+
+    top: 320px;
+
+    left: -20px;
+
+    transform: scaleX(-1);
+
+  }
+
+  80% {
+
+    top: 320px;
+
+    left: -100px;
+
+    transform: scaleX(-1);
+
+  }
+
+  81% {
+
+    top: 320px;
+
+    left: -100px;
+
+    transform: scaleX(1); /* Facing Right */
+
+  }
+
+  100% {
+
+    top: 320px;
+
+    left: -20px;
+
+    transform: scaleX(1);
+
+  }
+
+}
+ 
+
+ 
+ 
 
 /* Messages */
 .login-message {
@@ -329,10 +478,8 @@
     height: 120px;
   }
 }
-  padding: 2rem;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-}
 
+/* Legacy Styles (can be removed if not needed) */
 .login-card {
   background: #1e1e1e;
   border-radius: 16px;

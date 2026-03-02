@@ -4,6 +4,8 @@ import { authService } from '../services/authService';
 import Button from './ui/Button';
 import Input from './ui/Input';
 import Badge from './ui/Badge';
+import Lottie from 'lottie-react';
+import marioAnimation from '../assets/mario-loading.json';
 import './Login.css';
 
 function Login() {
@@ -106,6 +108,15 @@ function Login() {
             <p className="login-form-subtitle">
               {isLogin ? 'WELCOME BACK!' : 'CREATE YOUR ACCOUNT'}
             </p>
+            {loading && (
+              <div className="login-loading-mario">
+                <Lottie 
+                  animationData={marioAnimation} 
+                  loop={true}
+                  style={{ width: 240, height: 240 }}
+                />
+              </div>
+            )}
           </div>
 
           {error && (

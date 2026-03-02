@@ -52,20 +52,30 @@ export const authService = {
    * Register a new user
    */
   async register(userData) {
-    return apiRequest('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    });
+    // Add minimum loading time to show animation
+    const [data] = await Promise.all([
+      apiRequest('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(userData),
+      }),
+      new Promise(resolve => setTimeout(resolve, 3000)) // 3 second minimum
+    ]);
+    
+    return data;
   },
 
   /**
    * Login user and store access token
    */
   async login(credentials) {
-    const data = await apiRequest('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    });
+    // Add minimum loading time to show animation
+    const [data] = await Promise.all([
+      apiRequest('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+      }),
+      new Promise(resolve => setTimeout(resolve, 3000)) // 3 second minimum
+    ]);
 
     localStorage.setItem(TOKEN_KEY, data.accessToken);
     return data;
